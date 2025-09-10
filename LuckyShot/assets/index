@@ -6,23 +6,22 @@
   <title>Lucky Shot</title>
   <style>
     body {
-      font-family: sans-serif; /* Uma fonte mais legível para UI */
+      font-family: sans-serif;
       background-color: #2c2c2c;
       color: #f0f0f0;
       text-align: center;
       padding: 20px;
     }
     h1, h2 {
-      font-family: 'Press Start 2P', cursive; /* Fonte pixelada para títulos */
+      font-family: 'Press Start 2P', cursive;
       color: #ffc0cb;
     }
-    /* Importa a fonte do Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
     #gun-canvas {
-      width: 256px; /* Tamanho de exibição maior */
+      width: 256px;
       height: 256px;
-      image-rendering: pixelated; /* Garante que os pixels fiquem nítidos */
+      image-rendering: pixelated;
       cursor: pointer;
       margin: 20px auto;
       display: block;
@@ -30,6 +29,7 @@
       border-radius: 8px;
       background-color: #444;
     }
+
     #stats {
       margin-bottom: 20px;
       background-color: #3a3a3a;
@@ -37,6 +37,7 @@
       border-radius: 8px;
       display: inline-block;
     }
+
     .btn, .upgrade, .skin-item {
       background: #555;
       border: 2px solid #111;
@@ -50,12 +51,12 @@
       color: #f0f0f0;
       font-size: 12px;
     }
+
     .btn:hover, .upgrade:hover, .skin-item:hover {
-        background-color: #666;
-        transform: translateY(-2px);
+      background-color: #666;
+      transform: translateY(-2px);
     }
 
-    /* Estilos para o Modal do Inventário */
     .modal {
       display: none;
       position: fixed;
@@ -67,6 +68,7 @@
       overflow: auto;
       background-color: rgba(0,0,0,0.8);
     }
+
     .modal-content {
       background-color: #2c2c2c;
       margin: 10% auto;
@@ -77,6 +79,7 @@
       border-radius: 8px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.5);
     }
+
     .close-button {
       color: #aaa;
       float: right;
@@ -84,12 +87,14 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     #inventory {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       margin-top: 20px;
     }
+
     .skin-item img {
       width: 64px;
       height: 64px;
@@ -100,8 +105,9 @@
       border-radius: 4px;
       background-color: #444;
     }
+
     .skin-item span {
-        font-size: 10px;
+      font-size: 10px;
     }
   </style>
 </head>
@@ -115,7 +121,6 @@
     <p>Multiplicador: x<span id="multiplier">1</span></p>
   </div>
 
-  <!-- Canvas para a arma -->
   <canvas id="gun-canvas" width="128" height="128"></canvas>
 
   <h2>Upgrades</h2>
@@ -123,13 +128,11 @@
 
   <hr style="border-color: #444; margin: 20px auto; width: 50%;">
 
-  <!-- Botões de Ação -->
   <div>
     <button class="btn" onclick="openInventory()">Inventário</button>
     <button class="btn" onclick="resetGame()">Resetar Jogo</button>
   </div>
 
-  <!-- Modal do Inventário -->
   <div id="inventory-modal" class="modal">
     <div class="modal-content">
       <span class="close-button" onclick="closeInventory()">&times;</span>
@@ -138,29 +141,23 @@
     </div>
   </div>
 
-
   <script>
-    // Variáveis do Jogo
     let player_money = 100;
     let current_bet = 1;
     let winnings_multiplier = 1;
     let passive_income_per_second = 0;
     let chance_of_losing_percentage = 20;
 
-    // Variáveis das Skins
     let ownedSkins = ["base"];
-    let equippedSkinSrc = "./assets/skins/Gemini_Generated_Image_fkolkmfkolkmfkol.png"; 
+    let equippedSkinSrc = "./assets/skins/skin1.png"; 
 
-    // Variáveis do Canvas
     const canvas = document.getElementById('gun-canvas');
     const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false; // Essencial para pixel art!
+    ctx.imageSmoothingEnabled = false;
 
-    // Armazena as imagens pré-carregadas
     const skinImages = {};
 
     const skins = [
-      // CORRIGIDO: Adicionado "./" no início de cada caminho para forçar o caminho relativo
       { id: "base", name: "Revólver Padrão", rarity: "comum", src: "./assets/skins/skin1.png" },
       { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "./assets/skins/skin2.png" },
       { id: "common_blue", name: "Cabo Azul", rarity: "comum", src: "./assets/skins/skinblue.png" },
@@ -176,56 +173,38 @@
     ];
 
     const upgrades = [
-      { id: 1, name: "Aposta +1", cost: 20, description: "Aumenta aposta +1", type: "bet", value: 1, bought: 0, max: 10 },
-      { id: 2, name: "Renda +1", cost: 50, description: "+1 renda passiva", type: "passive", value: 1, bought: 0, max: 10, requires: 1 },
-      { id: 3, name: "Sorte -5%", cost: 200, description: "Reduz chance de perder -5%", type: "risk", value: -5, bought: 0, max: 5, requires: 2 }
+      { id: 1, name: "Aposta +1", cost: 20, type: "bet", value: 1, bought: 0, max: 10 },
+      { id: 2, name: "Renda +1", cost: 50, type: "passive", value: 1, bought: 0, max: 10, requires: 1 },
+      { id: 3, name: "Sorte -5%", cost: 200, type: "risk", value: -5, bought: 0, max: 5, requires: 2 }
     ];
 
-    // --- Funções do Canvas ---
     function preloadSkins(callback) {
-        let loadedCount = 0;
-        const totalSkins = skins.length;
-        skins.forEach(skin => {
-            const img = new Image();
-            img.src = skin.src;
-            img.onload = () => {
-                loadedCount++;
-                skinImages[skin.src] = img; // Armazena a imagem carregada
-                if (loadedCount === totalSkins) {
-                    callback(); // Roda o callback quando todas as imagens carregarem
-                }
-            };
-            // Adiciona um fallback caso a imagem não carregue
-            img.onerror = () => {
-                loadedCount++;
-                console.error(`Falha ao carregar a skin: ${skin.src}`);
-                if (loadedCount === totalSkins) {
-                    callback();
-                }
-            };
-        });
+      let loadedCount = 0;
+      const totalSkins = skins.length;
+      skins.forEach(skin => {
+        const img = new Image();
+        img.src = skin.src;
+        img.onload = () => { loadedCount++; skinImages[skin.src] = img; if (loadedCount === totalSkins) callback(); };
+        img.onerror = () => { loadedCount++; console.error(`Falha ao carregar a skin: ${skin.src}`); if (loadedCount === totalSkins) callback(); };
+      });
     }
 
     function drawEquippedSkin() {
-        const img = skinImages[equippedSkinSrc];
-        if (img) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        } else {
-            console.log("A imagem da skin ainda não foi carregada.");
-        }
+      const img = skinImages[equippedSkinSrc];
+      if (img) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#444"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      }
     }
-
-
-    // --- Funções do Jogo ---
 
     function renderUpgrades() {
       const upgradesDiv = document.getElementById("upgrades");
       upgradesDiv.innerHTML = "";
       upgrades.forEach(up => {
-        if (up.requires && upgrades.find(u => u.id === up.requires).bought < 1) {
-          return;
-        }
+        if (up.requires && upgrades.find(u => u.id === up.requires).bought < 1) return;
         const btn = document.createElement("div");
         btn.className = "upgrade";
         btn.innerHTML = `${up.name} <br> R$${up.cost}`;
@@ -240,127 +219,71 @@
       ownedSkins.forEach(skinId => {
         const skinData = skins.find(s => s.id === skinId);
         if (!skinData) return;
-
         const div = document.createElement("div");
         div.className = "skin-item";
-        // Usa a imagem pré-carregada para o inventário também
         div.innerHTML = `<img src="${skinData.src}" alt="${skinData.name}"/><span>${skinData.name}</span>`;
         div.onclick = () => equipSkin(skinData.src);
         inv.appendChild(div);
       });
     }
-    
-    function openInventory() {
-        document.getElementById("inventory-modal").style.display = "block";
-    }
-    function closeInventory() {
-        document.getElementById("inventory-modal").style.display = "none";
-    }
 
-    function equipSkin(src) {
-      equippedSkinSrc = src;
-      drawEquippedSkin(); // Redesenha o canvas com a nova skin
-      saveGame();
-      closeInventory();
-    }
+    function openInventory(){ document.getElementById("inventory-modal").style.display="block"; }
+    function closeInventory(){ document.getElementById("inventory-modal").style.display="none"; }
 
-    function buyUpgrade(upgrade) {
-      if (player_money >= upgrade.cost) {
-        player_money -= upgrade.cost;
-        upgrade.bought++;
-        if (upgrade.type === "bet") current_bet += upgrade.value;
-        if (upgrade.type === "passive") passive_income_per_second += upgrade.value;
-        if (upgrade.type === "risk") chance_of_losing_percentage = Math.max(0, chance_of_losing_percentage + upgrade.value);
-        upgrade.cost = Math.floor(upgrade.cost * 1.5);
-        updateUI();
-        renderUpgrades();
-        saveGame();
+    function equipSkin(src){ equippedSkinSrc=src; drawEquippedSkin(); saveGame(); closeInventory(); }
+
+    function buyUpgrade(upgrade){
+      if(player_money>=upgrade.cost){
+        player_money-=upgrade.cost; upgrade.bought++;
+        if(upgrade.type==="bet") current_bet+=upgrade.value;
+        if(upgrade.type==="passive") passive_income_per_second+=upgrade.value;
+        if(upgrade.type==="risk") chance_of_losing_percentage=Math.max(0,chance_of_losing_percentage+upgrade.value);
+        upgrade.cost=Math.floor(upgrade.cost*1.5); updateUI(); renderUpgrades(); saveGame();
       }
     }
 
-    function updateUI() {
-      document.getElementById("money").innerText = player_money.toFixed(0);
-      document.getElementById("bet").innerText = current_bet;
-      document.getElementById("chance").innerText = chance_of_losing_percentage;
-      document.getElementById("multiplier").innerText = winnings_multiplier;
+    function updateUI(){
+      document.getElementById("money").innerText=player_money.toFixed(0);
+      document.getElementById("bet").innerText=current_bet;
+      document.getElementById("chance").innerText=chance_of_losing_percentage;
+      document.getElementById("multiplier").innerText=winnings_multiplier;
     }
 
-    function saveGame() {
+    function saveGame(){
       localStorage.setItem("luckyshot_save", JSON.stringify({
         player_money, current_bet, winnings_multiplier, passive_income_per_second, chance_of_losing_percentage, upgrades, equippedSkinSrc, ownedSkins
       }));
     }
 
-    function loadGame() {
-      const save = JSON.parse(localStorage.getItem("luckyshot_save"));
-      if (save) {
-        player_money = save.player_money;
-        current_bet = save.current_bet;
-        winnings_multiplier = save.winnings_multiplier;
-        passive_income_per_second = save.passive_income_per_second;
-        chance_of_losing_percentage = save.chance_of_losing_percentage;
-        
-        // Lógica de fallback melhorada para a skin base
-        const baseSkin = skins.find(s => s.id === 'base');
-        const baseSkinSrc = baseSkin ? baseSkin.src : ''; // Pega o src da skin 'base'
-        equippedSkinSrc = save.equippedSkinSrc || baseSkinSrc;
-        
-        ownedSkins = save.ownedSkins || ["base"];
-        if (save.upgrades) {
-          save.upgrades.forEach((savedUpgrade, index) => {
-              if(upgrades[index]) {
-                  upgrades[index].bought = savedUpgrade.bought;
-                  upgrades[index].cost = savedUpgrade.cost;
-              }
-          });
+    function loadGame(){
+      const save=JSON.parse(localStorage.getItem("luckyshot_save"));
+      if(save){
+        player_money=save.player_money;
+        current_bet=save.current_bet;
+        winnings_multiplier=save.winnings_multiplier;
+        passive_income_per_second=save.passive_income_per_second;
+        chance_of_losing_percentage=save.chance_of_losing_percentage;
+        const baseSkin = skins.find(s=>s.id==='base'); equippedSkinSrc=save.equippedSkinSrc||baseSkin.src;
+        ownedSkins=save.ownedSkins||["base"];
+        if(save.upgrades){
+          save.upgrades.forEach((su,i)=>{if(upgrades[i]){upgrades[i].bought=su.bought; upgrades[i].cost=su.cost;}});
         }
       }
     }
 
-    function resetGame() {
-      if (confirm("Tem certeza? Todo o seu progresso será perdido.")) {
-        localStorage.removeItem("luckyshot_save");
-        location.reload();
+    function resetGame(){ if(confirm("Tem certeza? Todo o seu progresso será perdido.")){ localStorage.removeItem("luckyshot_save"); location.reload(); } }
+
+    function grantRandomSkin(){
+      const unowned=skins.filter(s=>!ownedSkins.includes(s.id)&&s.id!=='base');
+      if(unowned.length>0){
+        const random=unowned[Math.floor(Math.random()*unowned.length)];
+        ownedSkins.push(random.id);
+        alert(`Você desbloqueou uma nova skin: ${random.name}!`);
+        renderInventory(); saveGame();
       }
     }
-    
-    function grantRandomSkin() {
-        const unownedSkins = skins.filter(s => !ownedSkins.includes(s.id) && s.id !== 'base');
-        if (unownedSkins.length > 0) {
-            const randomSkin = unownedSkins[Math.floor(Math.random() * unownedSkins.length)];
-            ownedSkins.push(randomSkin.id);
-            alert(`Você desbloqueou uma nova skin: ${randomSkin.name}!`);
-            renderInventory();
-            saveGame();
-        }
-    }
-    
-    function startGame() {
-        loadGame();
-        updateUI();
-        renderUpgrades();
-        renderInventory();
-        drawEquippedSkin(); // Desenha a skin inicial no canvas
 
-        setInterval(() => {
-          player_money += passive_income_per_second;
-          updateUI();
-          // Não precisa salvar a cada segundo aqui, salvamos em ações importantes
-        }, 1000);
-
-        setInterval(grantRandomSkin, 20000);
-
-        // Salva o jogo a cada 10 segundos para não perder o progresso passivo
-        setInterval(saveGame, 10000);
-    }
-    
-    // --- Inicialização ---
-    // Espera todas as imagens carregarem antes de iniciar o jogo
-    window.onload = () => {
-        preloadSkins(startGame);
-    };
-
-  </script>
-</body>
-</html>
-
+    function startGame(){
+      loadGame(); updateUI(); renderUpgrades(); renderInventory(); drawEquippedSkin();
+      setInterval(()=>{ player_money+=passive_income_per_second; updateUI(); },1000);
+      setInterval(grantRandomSkin,200
