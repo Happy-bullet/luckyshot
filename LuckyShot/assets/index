@@ -149,8 +149,7 @@
 
     // Variáveis das Skins
     let ownedSkins = ["base"];
-    // CORRIGIDO: Caminho para a imagem padrão atualizado
-    let equippedSkinSrc = "assets/skins/Gemini_Generated_Image_fkolkmfkolkmfkol.png"; 
+    let equippedSkinSrc = "./assets/skins/Gemini_Generated_Image_fkolkmfkolkmfkol.png"; 
 
     // Variáveis do Canvas
     const canvas = document.getElementById('gun-canvas');
@@ -161,18 +160,18 @@
     const skinImages = {};
 
     const skins = [
-      // CORRIGIDO: Skin base atualizada com o novo arquivo
-      { id: "base", name: "Revólver Padrão", rarity: "comum", src: "assets/skins/Gemini_Generated_Image_fkolkmfkolkmfkol.png" },
-      { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(1).png" },
-      { id: "uncommon_gold", name: "Dourado Gasto", rarity: "incomum", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(2).png" },
-      { id: "uncommon_rusted", name: "Enferrujado", rarity: "incomum", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(3).png" },
-      { id: "rare_cyber", name: "Cyberpunk", rarity: "rara", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(4).png" },
-      { id: "rare_camo", name: "Camuflado", rarity: "rara", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(5).png" },
-      { id: "epic_ice", name: "Gélido", rarity: "épica", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(6).png" },
-      { id: "epic_lava", name: "Magma", rarity: "épica", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(7).png" },
-      { id: "legendary_pixel", name: "Pixel Dourado", rarity: "lendária", src: "assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(8).png" },
-      { id: "mythic_banana", name: "Banana de NFT", rarity: "mítica", src: "assets/skins/Gemini_Generated_Image_1jydq01jydq01jyd.png" },
-      { id: "secret_alien", name: "Tecnologia Alien", rarity: "secreta", src: "assets/skins/Gemini_Generated_Image_1jydq01jydq01jyd(1).png" }
+      // CORRIGIDO: Adicionado "./" no início de cada caminho para forçar o caminho relativo
+      { id: "base", name: "Revólver Padrão", rarity: "comum", src: "./assets/skins/Gemini_Generated_Image_fkolkmfkolkmfkol.png" },
+      { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(1).png" },
+      { id: "uncommon_gold", name: "Dourado Gasto", rarity: "incomum", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(2).png" },
+      { id: "uncommon_rusted", name: "Enferrujado", rarity: "incomum", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(3).png" },
+      { id: "rare_cyber", name: "Cyberpunk", rarity: "rara", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(4).png" },
+      { id: "rare_camo", name: "Camuflado", rarity: "rara", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(5).png" },
+      { id: "epic_ice", name: "Gélido", rarity: "épica", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(6).png" },
+      { id: "epic_lava", name: "Magma", rarity: "épica", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(7).png" },
+      { id: "legendary_pixel", name: "Pixel Dourado", rarity: "lendária", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(8).png" },
+      { id: "mythic_banana", name: "Banana de NFT", rarity: "mítica", src: "./assets/skins/Gemini_Generated_Image_1jydq01jydq01jyd.png" },
+      { id: "secret_alien", name: "Tecnologia Alien", rarity: "secreta", src: "./assets/skins/Gemini_Generated_Image_1jydq01jydq01jyd(1).png" }
     ];
 
     const upgrades = [
