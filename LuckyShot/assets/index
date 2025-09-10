@@ -149,7 +149,7 @@
 
     // Variáveis das Skins
     let ownedSkins = ["base"];
-    let equippedSkinSrc = "assets/skins/common_blue.jpg"; // ATUALIZADO: para combinar com a nova skin base
+    let equippedSkinSrc = "common_blue.jpg"; // CORRIGIDO: Caminho direto para a imagem
 
     // Variáveis do Canvas
     const canvas = document.getElementById('gun-canvas');
@@ -160,16 +160,17 @@
     const skinImages = {};
 
     const skins = [
-      { id: "base", name: "Revólver Padrão", rarity: "comum", src: "assets/skins/common_blue.jpg" },
-      { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "assets/skins/common_green.jpg" },
-      { id: "uncommon_gold", name: "Dourado Gasto", rarity: "incomum", src: "assets/skins/uncommon_gold.jpg" },
-      { id: "uncommon_rusted", name: "Enferrujado", rarity: "incomum", src: "assets/skins/uncommon_rusted.jpg" },
-      { id: "rare_camo", name: "Camuflado", rarity: "rara", src: "assets/skins/rare_camo.jpg" },
-      { id: "rare_cyber", name: "Cyberpunk", rarity: "rara", src: "assets/skins/rare_cyber.jpg" },
-      { id: "epic_ice", name: "Gélido", rarity: "épica", src: "assets/skins/epic_ice.jpg" },
-      { id: "epic_lava", name: "Magma", rarity: "épica", src: "assets/skins/epic_lava.jpg" },
-      { id: "mythic_banana", name: "Banana de NFT", rarity: "mítica", src: "assets/skins/mythic_banana.jpg" },
-      { id: "secret_alien", name: "Tecnologia Alien", rarity: "secreta", src: "assets/skins/secret_alien.jpg" }
+      // CORRIGIDO: Removido 'assets/skins/' de todos os caminhos
+      { id: "base", name: "Revólver Padrão", rarity: "comum", src: "common_blue.jpg" },
+      { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "common_green.jpg" },
+      { id: "uncommon_gold", name: "Dourado Gasto", rarity: "incomum", src: "uncommon_gold.jpg" },
+      { id: "uncommon_rusted", name: "Enferrujado", rarity: "incomum", src: "uncommon_rusted.jpg" },
+      { id: "rare_camo", name: "Camuflado", rarity: "rara", src: "rare_camo.jpg" },
+      { id: "rare_cyber", name: "Cyberpunk", rarity: "rara", src: "rare_cyber.jpg" },
+      { id: "epic_ice", name: "Gélido", rarity: "épica", src: "epic_ice.jpg" },
+      { id: "epic_lava", name: "Magma", rarity: "épica", src: "epic_lava.jpg" },
+      { id: "mythic_banana", name: "Banana de NFT", rarity: "mítica", src: "mythic_banana.jpg" },
+      { id: "secret_alien", name: "Tecnologia Alien", rarity: "secreta", src: "secret_alien.jpg" }
     ];
 
     const upgrades = [
