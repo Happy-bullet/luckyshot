@@ -161,17 +161,18 @@
 
     const skins = [
       // CORRIGIDO: Adicionado "./" no início de cada caminho para forçar o caminho relativo
-      { id: "base", name: "Revólver Padrão", rarity: "comum", src: "./assets/skins/Gemini_Generated_Image_fkolkmfkolkmfkol.png" },
-      { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(1).png" },
-      { id: "uncommon_gold", name: "Dourado Gasto", rarity: "incomum", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(2).png" },
-      { id: "uncommon_rusted", name: "Enferrujado", rarity: "incomum", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(3).png" },
-      { id: "rare_cyber", name: "Cyberpunk", rarity: "rara", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(4).png" },
-      { id: "rare_camo", name: "Camuflado", rarity: "rara", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(5).png" },
-      { id: "epic_ice", name: "Gélido", rarity: "épica", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(6).png" },
-      { id: "epic_lava", name: "Magma", rarity: "épica", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(7).png" },
-      { id: "legendary_pixel", name: "Pixel Dourado", rarity: "lendária", src: "./assets/skins/Gemini_Generated_Image_le9wuzle9wuzle9w(8).png" },
-      { id: "mythic_banana", name: "Banana de NFT", rarity: "mítica", src: "./assets/skins/Gemini_Generated_Image_1jydq01jydq01jyd.png" },
-      { id: "secret_alien", name: "Tecnologia Alien", rarity: "secreta", src: "./assets/skins/Gemini_Generated_Image_1jydq01jydq01jyd(1).png" }
+      { id: "base", name: "Revólver Padrão", rarity: "comum", src: "./assets/skins/skin1.png" },
+      { id: "common_green", name: "Cabo Verde", rarity: "comum", src: "./assets/skins/skin2.png" },
+      { id: "common_blue", name: "Cabo Azul", rarity: "comum", src: "./assets/skins/skinblue.png" },
+      { id: "uncommon_gold", name: "Dourado Gasto", rarity: "incomum", src: "./assets/skins/skin3.png" },
+      { id: "uncommon_rusted", name: "Enferrujado", rarity: "incomum", src: "./assets/skins/skin4.png" },
+      { id: "rare_cyber", name: "Cyberpunk", rarity: "rara", src: "./assets/skins/skin5.png" },
+      { id: "rare_camo", name: "Camuflado", rarity: "rara", src: "./assets/skins/skin6.png" },
+      { id: "epic_ice", name: "Gélido", rarity: "épica", src: "./assets/skins/skin7.png" },
+      { id: "epic_lava", name: "Magma", rarity: "épica", src: "./assets/skins/skin8.png" },
+      { id: "legendary_pixel", name: "Pixel Dourado", rarity: "lendária", src: "./assets/skins/skin9.png" },
+      { id: "mythic_banana", name: "Banana de NFT", rarity: "mítica", src: "./assets/skins/skin10.png" },
+      { id: "secret_alien", name: "Tecnologia Alien", rarity: "secreta", src: "./assets/skins/skin11.png" }
     ];
 
     const upgrades = [
