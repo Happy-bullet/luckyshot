@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lucky Shot — Corrigido</title>
+  <style>
+    :root{--bg:#1b1c20;--panel:#232428;--accent:#ff8fb1;--muted:#9aa0a6;--glass: rgba(255,255,255,0.03);--card:#222}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, 'Press Start 2P', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:linear-gradient(180deg,var(--bg),#0f0f12);color:#eef2f5}
+    .app{display:grid;grid-template-columns:320px 1fr 320px;gap:18px;max-width:1200px;margin:22px auto;padding:16px}
+    .sidebar{background:linear-gradient(180deg,var(--panel),#19191b);border-radius:12px;padding:12px;height:calc(100vh - 96px);overflow:auto;border:1px solid rgba(255,255,255,0.03)}
+    .sidebar h3{margin:4px 0 12px;color:var(--accent);font-size:13px}
+    .upgrade-item{display:flex;justify-content:space-between;align-items:center;background:var(--glass);padding:10px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(0,0,0,0.4)}
+    .upgrade-body{display:flex;gap:10px;align-items:center}
+    .upgrade-body .icon{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#444,#222);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .upgrade-meta{font-size:12px}
+    .upgrade-meta .title{font-weight:700}
+    .upgrade-meta .desc{color:var(--muted);font-size:11px}
+    .upgrade-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+    .btn-buy{background:linear-gradient(180deg,#3b8cff,#1f6be6);border:none;color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+    .btn-buy:disabled{opacity:0.45;cursor:not-allowed}
+    .center{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 12px 40px rgba(0,0,0,0.6);text-align:center}
+    h1{margin:0 0 12px;color:var(--accent)}
+    .stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+    .stat{background:var(--card);padding:8px 12px;border-radius:10px;min-width:110px}
+    .stat small{display:block;color:var(--muted);font-size:11px}
+    .stat b{display:block;font-size:16px}
+    #gun-canvas{width:320px;height:320px;image-rendering:pixelated;cursor:pointer;border-radius:12px;border:4px solid #0b0b0c;background:#121212;display:block;margin:10px auto}
+    .controls{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:12px}
+    .control-btn{background:#111;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;color:#fff}
+    .right{background:linear-gradient(180deg,var(--panel),#19191b);padding:12px;border-radius:12px;height:calc(100vh - 96px);overflow:auto;border:1px solid rgba(255,255,255,0.03)}
+    .skins-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .skin{background:var(--glass);padding:8px;border-radius:8px;cursor:pointer;border:1px solid rgba(0,0,0,0.4);text-align:center}
+    .skin img{width:100%;height:70px;object-fit:cover;border-radius:6px;image-rendering:pixelated}
+    .skin.locked{opacity:0.7;cursor:default}
+    .skin.active{outline:2px solid var(--accent)}
+    footer{grid-column:1/4;text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
+    @media (max-width:980px){.app{grid-template-columns:1fr}.sidebar,.right{height:auto}#gun-canvas{width:260px;height:260px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h3>Upgrades</h3>
+      <div id="upgrades-list"></div>
+      <hr style="border-color:rgba(255,255,255,0.03);margin:12px 0">
+      <div style="font-size:12px;color:var(--muted)">Os upgrades bloqueados ficam ocultos até cumprir o pré-requisito.</div>
+    </aside>
+    <main class="center">
+      <h1>🔫 Lucky Shot</h1>
+      <div class="stats">
+        <div class="stat"><small>Dinheiro</small><b>R$ <span id="money">0</span></b></div>
+        <div class="stat"><small>Aposta</small><b>R$ <span id="bet">1</span></b></div>
+        <div class="stat"><small>Chance perder</small><b><span id="chance">20</span>%</b></div>
+        <div class="stat"><small>Multiplicador</small><b>x <span id="multiplier">1</span></b></div>
+      </div>
+      <canvas id="gun-canvas" width="128" height="128" title="Clique para atirar / apostar"></canvas>
+      <div class="controls">
+        <button class="control-btn" id="decrease-bet">-</button>
+        <div style="min-width:160px;text-align:center;color:var(--muted)">Aposta atual: R$ <span id="bet-display">1</span></div>
+        <button class="control-btn" id="increase-bet">+</button>
+        <button class="control-btn" id="reset-btn">Resetar</button>
+      </div>
+      <div id="log" style="margin-top:12px;color:var(--muted);font-size:13px;min-height:26px"></div>
+    </main>
+    <aside class="right">
+      <h3>Inventário de Skins</h3>
+      <div id="skins" class="skins-grid"></div>
+      <hr style="border-color:rgba(255,255,255,0.03);margin:12px 0">
+      <div style="font-size:12px;color:var(--muted)">Skins possuem pesos (raridade). Caixas usam peso para sortear.</div>
+    </aside>
+    <footer>.</footer>
+  </div>
+  <script>
+    let player_money = 100;
+    let current_bet = 1;
+    let max_bet = 1;
+    let passive_income_per_second = 0;
+    let chance_of_losing_percentage = 20;
+    let winnings_multiplier = 1;
+    let ownedSkins = ["base"];
+    let equippedSkinId = 'base';
+    const skins = [
+      { id: "base", name: "Revólver Padrão", src: "./assets/skins/skin1.png", weight: 60 },
+      { id: "common_green", name: "Cabo Verde", src: "./assets/skins/skin2.png", weight: 40 },
+      { id: "common_blue", name: "Cabo Azul", src: "./assets/skins/skin3.png", weight: 40 },
+      { id: "uncommon_gold", name: "Dourado Gasto", src: "./assets/skins/skin4.png", weight: 25 },
+      { id: "uncommon_rusted", name: "Enferrujado", src: "./assets/skins/skin5.png", weight: 25 },
+      { id: "rare_cyber", name: "Cyberpunk", src: "./assets/skins/skin6.png", weight: 15 },
+      { id: "rare_camo", name: "Camuflado", src: "./assets/skins/skin7.png", weight: 15 },
+      { id: "epic_ice", name: "Gélido", src: "./assets/skins/skin8.png", weight: 8 },
+      { id: "epic_lava", name: "Magma", src: "./assets/skins/skin9.png", weight: 8 },
+      { id: "legendary_pixel", name: "Pixel Dourado", src: "./assets/skins/skin10.png", weight: 4 },
+      { id: "mythic_banana", name: "Banana de NFT", src: "./assets/skins/skin11.png", weight: 2 },
+      { id: "secret_alien", name: "Tecnologia Alien", src: "./assets/skins/skin12.png", weight: 1 }
+    ];
+    const upgrades = [
+      { id: 'u_bet', name: 'Apostar Mais', baseCost: 20, type: 'bet', value: 1, max_bought: 10, bought: 0, desc: 'Aumenta sua aposta MÁXIMA por compra.' },
+      { id: 'u_passive', name: 'Contratar alguém para apostar por você', baseCost: 50, type: 'passive', value: 1, max_bought: 10, bought: 0, desc: 'Ganha +R$1 por segundo passivamente.', requires: 'u_bet' },
+      { id: 'u_mult', name: 'Colocar mais balas na arma', baseCost: 250, type: 'mult', value: 0.2, risk_increase: 20, max_bought: 4, bought: 0, desc: 'Aumenta o risco em 20% mas o ganho em 0.2x.', requires: 'u_passive' },
+      { id: 'u_rustygger', name: 'Gatilho Enferrujado', baseCost: 50, type: 'risk', value: -5, max_bought: 20, bought: 0, desc: 'Diminui a chance de morte em 5%.', requires: 'u_mult' },
+      { id: 'u_skincrate', name: 'Caixa de Skins', baseCost: 120, type: 'crate', value: 1, bought: 0, desc: 'Abre uma skin aleatória (pode ser repetida).', requires: 'u_rustygger' },
+      { id: 'u_bomdelabia', name: 'Bom de Lábia', baseCost: 200, type: 'bet', value: 5, max_bought: 10, bought: 0, desc: 'Aumenta sua aposta MÁXIMA em +5 por compra.', requires: 'u_rustygger' },
+      { id: 'u_expandir', name: 'Expandir o Negócio', baseCost: 250, type: 'passive', value: 5, max_bought: 10, bought: 0, desc: 'Aumenta o ganho passivo em +5/s.', requires: 'u_bomdelabia' }
+    ];
+    const canvas = document.getElementById('gun-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    const skinImages = {};
+    let blackDataUrl = null;
+    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+    function makeBlackDataUrl(size=64){ const c = document.createElement('canvas'); c.width=c.height=size; const cx=c.getContext('2d'); cx.fillStyle='#000'; cx.fillRect(0,0,size,size); return c.toDataURL('image/png'); }
+    function preloadSkins(callback){ blackDataUrl = makeBlackDataUrl(128); let loaded = 0; const total = skins.length; skins.forEach(s => { const img = new Image(); img.onload = ()=>{ skinImages[s.id]=img; if(++loaded===total && callback) callback(); }; img.onerror = ()=>{ skinImages[s.id]=null; if(++loaded===total && callback) callback(); }; img.src = s.src; }); }
+    function drawEquippedSkin(){ ctx.clearRect(0,0,canvas.width,canvas.height); const owned = ownedSkins.includes(equippedSkinId); const img = owned ? skinImages[equippedSkinId] : null; if(img){ ctx.drawImage(img, 0, 0, canvas.width, canvas.height); } else { ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width,canvas.height); } }
+    function updateUI(){ document.getElementById('money').innerText = Math.floor(player_money); document.getElementById('bet').innerText = Math.floor(current_bet); document.getElementById('bet-display').innerText = Math.floor(current_bet); document.getElementById('chance').innerText = clamp(Math.round(chance_of_losing_percentage),0,100); document.getElementById('multiplier').innerText = (+winnings_multiplier).toFixed(2); renderUpgrades(); renderSkins(); }
+    function log(msg, important=false){ const el = document.getElementById('log'); el.innerText = msg; if(important){ el.style.color = 'var(--accent)'; setTimeout(()=>el.style.color = 'var(--muted)', 2000); } }
+    function canPlaceBet(){ return player_money >= current_bet && current_bet > 0; }
+    function placeBet(){ if(!canPlaceBet()){ log('Dinheiro insuficiente para essa aposta.'); return; } player_money -= current_bet; const loseChance = clamp(chance_of_losing_percentage, 0, 95); const roll = Math.random()*100; const won = roll > loseChance; if(won){ const gain = Math.floor(current_bet * winnings_multiplier); player_money += current_bet + gain; log(`Ganhou! R$${gain}.`, true); } else { log(`Perdeu R$${current_bet}.`); } updateUI(); saveGame(); animateCanvas(won); }
+    canvas.addEventListener('click', ()=>placeBet());
+    document.getElementById('increase-bet').addEventListener('click', ()=>{ current_bet = Math.min(max_bet, current_bet + 1); updateUI(); });
+    document.getElementById('decrease-bet').addEventListener('click', ()=>{ current_bet = Math.max(1, current_bet - 1); updateUI(); });
+    document.getElementById('reset-btn').addEventListener('click', ()=>{ if(confirm('Resetar o jogo?')){ localStorage.removeItem('luckyshot_save'); location.reload(); }});
+    function costAfterBought(baseCost, bought){ return Math.max(1, Math.floor(baseCost * Math.pow(1.15, bought))); }
+    function renderUpgrades(){ const container = document.getElementById('upgrades-list'); container.innerHTML = ''; upgrades.forEach(u => { if(u.requires){ const req = upgrades.find(x=>x.id === u.requires); if(!req || req.bought < 1) return; } u.cost = costAfterBought(u.baseCost, u.bought); const canAfford = player_money >= u.cost; const hasReachedMax = u.max_bought && u.bought >= u.max_bought; const canBuy = canAfford && !hasReachedMax; const buttonText = hasReachedMax ? 'Máximo' : 'Comprar'; let boughtText = `Compradas: ${u.bought}`; if (u.max_bought) { boughtText += ` / ${u.max_bought}`; } const item = document.createElement('div'); item.className = 'upgrade-item'; item.innerHTML = `
+          <div class="upgrade-body">
+            <div class="icon">${u.name.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+            <div class="upgrade-meta">
+              <div class="title">${u.name}</div>
+              <div class="desc">${u.desc}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:6px">${boughtText}</div>
+            </div>
+          </div>
+          <div class="upgrade-actions">
+            <div style="font-size:12px;color:var(--muted)">R$ ${u.cost}</div>
+            <button class="btn-buy" ${!canBuy ? 'disabled' : ''} data-id="${u.id}">${buttonText}</button>
+          </div>
+        `; container.appendChild(item); }); container.querySelectorAll('.btn-buy').forEach(btn => { btn.onclick = ()=>{ buyUpgrade(btn.getAttribute('data-id')); }; }); }
+    function buyUpgrade(id){ const u = upgrades.find(x=>x.id===id); if(!u) return; if (u.max_bought && u.bought >= u.max_bought) { log('Limite máximo de compras para este upgrade atingido.'); return; } const cost = costAfterBought(u.baseCost, u.bought); if(player_money < cost){ log('Dinheiro insuficiente para comprar upgrade.'); return; } player_money -= cost; u.bought++; switch(u.type){ case 'bet': max_bet += u.value; break; case 'passive': passive_income_per_second += u.value; break; case 'risk': chance_of_losing_percentage = clamp(chance_of_losing_percentage + u.value, 0, 95); break; case 'mult': winnings_multiplier = +(winnings_multiplier + u.value).toFixed(2); if (u.risk_increase) { chance_of_losing_percentage = clamp(chance_of_losing_percentage + u.risk_increase, 0, 95); } break; case 'crate': openCrate(); break; } current_bet = Math.min(current_bet, max_bet); updateUI(); saveGame(); }
+    function renderSkins(){ const el = document.getElementById('skins'); el.innerHTML = ''; skins.forEach(s => { const owned = ownedSkins.includes(s.id); const div = document.createElement('div'); div.className = 'skin' + (owned ? (equippedSkinId===s.id? ' active' : '') : ' locked'); let borderColor = '#777'; if(s.weight >= 40) borderColor = '#8b8b8b'; else if(s.weight >= 25) borderColor = '#7ee7d9'; else if(s.weight >= 15) borderColor = '#9bcbff'; else if(s.weight >= 8) borderColor = '#c77fff'; else if(s.weight >= 4) borderColor = '#ffd166'; else borderColor = '#ffb3d9'; div.style.borderColor = borderColor; const imgSrc = owned ? s.src : blackDataUrl; const displayName = owned ? s.name : '???'; div.innerHTML = `
+          <img src="${imgSrc}" alt="${displayName}" onerror="this.style.opacity=.6" />
+          <div style="font-size:12px;margin-top:6px">${displayName}</div>
+        `; if(owned){ div.onclick = ()=>{ equippedSkinId = s.id; drawEquippedSkin(); saveGame(); updateUI(); }; } el.appendChild(div); }); }
+    function weightedChoice(list){ const total = list.reduce((acc,i)=>acc + (i.weight||1),0); let r = Math.random()*total; for(const item of list){ r -= (item.weight||1); if(r <= 0) return item; } return list[list.length-1]; }
+    function openCrate(){ const unowned = skins.filter(s=>!ownedSkins.includes(s.id) && s.id !== 'base'); let pick; if(unowned.length > 0 && Math.random() < 0.7){ pick = weightedChoice(unowned); ownedSkins.push(pick.id); log(`Desbloqueou skin: ${pick.name}`, true); } else { pick = weightedChoice(skins.filter(s=>s.id !== 'base')); if(!ownedSkins.includes(pick.id)){ ownedSkins.push(pick.id); log(`Desbloqueou skin: ${pick.name}`, true); } else { const bonus = Math.max(5, Math.floor((pick.weight||1) * 2)); player_money += bonus; log(`Skin repetida. Recebeu R$${bonus}.`); } } saveGame(); updateUI(); }
+    function animateCanvas(won){ let t=0; const dur=20; const id = setInterval(()=>{ t++; drawEquippedSkin(); ctx.save(); ctx.globalCompositeOperation='source-over'; ctx.fillStyle = won ? `rgba(126,231,217,${(0.5 - t/dur)})` : `rgba(255,100,100,${(0.45 - t/dur)})`; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.restore(); if(t>=dur){ clearInterval(id); drawEquippedSkin(); } },16); }
+    function saveGame(){ const state = { player_money, current_bet, max_bet, passive_income_per_second, chance_of_losing_percentage, winnings_multiplier, ownedSkins, equippedSkinId, upgrades: upgrades.map(u=>({id:u.id,bought:u.bought})) }; try{ localStorage.setItem('luckyshot_save', JSON.stringify(state)); }catch(e){ console.warn('Save falhou', e); } }
+    function applyUpgradesFromBoughtCounts(){ max_bet = 1; passive_income_per_second = 0; chance_of_losing_percentage = 20; winnings_multiplier = 1; upgrades.forEach(u=>{ if(!u.bought) return; if(u.type === 'bet'){ max_bet += u.value * u.bought; } else if(u.type === 'passive'){ passive_income_per_second += u.value * u.bought; } else if(u.type === 'risk'){ chance_of_losing_percentage = clamp(chance_of_losing_percentage + u.value * u.bought, 0, 95); } else if(u.type === 'mult'){ winnings_multiplier = +(winnings_multiplier + u.value * u.bought).toFixed(2); if(u.risk_increase) chance_of_losing_percentage = clamp(chance_of_losing_percentage + u.risk_increase * u.bought, 0, 95); } }); current_bet = Math.min(current_bet, max_bet); }
+    function loadGame(){ try{ const s = JSON.parse(localStorage.getItem('luckyshot_save')); if(!s) return; player_money = s.player_money ?? player_money; current_bet = s.current_bet ?? current_bet; ownedSkins = s.ownedSkins ?? ownedSkins; equippedSkinId = s.equippedSkinId ?? equippedSkinId; if(s.upgrades && Array.isArray(s.upgrades)){ s.upgrades.forEach(st=>{ const u = upgrades.find(x=>x.id===st.id); if(u) u.bought = st.bought; }); applyUpgradesFromBoughtCounts(); } else { max_bet = s.max_bet ?? max_bet; passive_income_per_second = s.passive_income_per_second ?? passive_income_per_second; chance_of_losing_percentage = s.chance_of_losing_percentage ?? chance_of_losing_percentage; winnings_multiplier = s.winnings_multiplier ?? winnings_multiplier; } current_bet = Math.min(current_bet, max_bet); }catch(e){ console.warn('Falha ao carregar save', e); } }
+    setInterval(()=>{ player_money += passive_income_per_second; updateUI(); }, 1000);
+    setInterval(()=>{ if(Math.random() < 0.06) openCrate(); }, 20000);
+    setInterval(saveGame, 10000);
+    function init(){ loadGame(); preloadSkins(()=>{ drawEquippedSkin(); updateUI(); }); chance_of_losing_percentage = clamp(chance_of_losing_percentage, 0, 95); winnings_multiplier = +winnings_multiplier.toFixed(2); }
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
